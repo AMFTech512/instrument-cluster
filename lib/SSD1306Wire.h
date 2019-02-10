@@ -32,7 +32,8 @@
 #define SSD1306Wire_h
 
 #include "OLEDDisplay.h"
-#include <Wire.h>
+#include "Wire.h"
+#include <thread>
 
 class SSD1306Wire : public OLEDDisplay {
   private:
@@ -78,7 +79,7 @@ class SSD1306Wire : public OLEDDisplay {
            }
            buffer_back[pos] = buffer[pos];
          }
-         yield();
+         std::this_thread::yield();
         }
 
         // If the minBoundY wasn't updated
@@ -110,7 +111,7 @@ class SSD1306Wire : public OLEDDisplay {
               k = 0;
             }
           }
-          yield();
+          std::this_thread::yield();
         }
 
         if (k != 0) {
@@ -162,6 +163,18 @@ class SSD1306Wire : public OLEDDisplay {
       if (_doI2cAutoInit) {
         Wire.begin(this->_address);
       }
+    }
+
+    uint8_t _min(uint8_t a, uint8_t b) {
+      if(a < b)
+        return a;
+      return b;
+    }
+
+    uint8_t _max(uint8_t a, uint8_t b) {
+      if(a > b)
+        return a;
+      return b;
     }
 
 };

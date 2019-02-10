@@ -5,7 +5,6 @@
 //
 // By James Henderson, 2016
 
-#include<python3.5m/Python.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <linux/i2c-dev.h>
@@ -20,7 +19,7 @@ typedef unsigned char uint8_t;
 
 uint8_t disp_buffer[1056+33];
 
-void render();
+// void render();
 
 int main(int argc, char **argv)
 {
@@ -34,11 +33,11 @@ int main(int argc, char **argv)
 		0x00, // semd command stream
 		0xae, // turn display off
 		0xa1, // segment remapping, 0xa0 for normal image, 0xa1 for a backwards image
-		0xc8, // set display right-side up (0xc8 for up-side down, 0xc0 for right-side up; common output scan direction)
+		0xc0, // set display right-side up (0xc8 for up-side down, 0xc0 for right-side up; common output scan direction)
 		0xa8,
 		0x3f, // set multiplex ratio
 		0xd5,
-		0x50, // set oscillator frequncy
+		0xf0, // set oscillator frequncy
 		0xdb,
 		0x35, // VCOM deselect level set
 		0x81,
@@ -46,8 +45,9 @@ int main(int argc, char **argv)
 		0x30, // set pump voltage value
 		0xad,
 		0x8b, // use the internal voltage supply for the display (DC-DC off/on)
-		0x40, // set display start line to the first line
-		0xaf
+		//0x40, // set display start line to the first line
+		0xaf, // turn display on
+		0xa5 // test mode
 	};										// Buffer for data being read/ written on the i2c bus
 
 
@@ -68,24 +68,24 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-    while(1) {
-        for(int i = 0; i < sizeof(disp_buffer); i++) {
-            if(i % 33 == 0) {
-                disp_buffer[i] = 0x40;
-                continue;
-            }
-            disp_buffer[i] = 0xff;
-        }
-        render(fd);
-        for(int i = 0; i < sizeof(disp_buffer); i++) {
-            if(i % 33 == 0) {
-                disp_buffer[i] = 0x40;
-                continue;
-            }
-            disp_buffer[i] = 0x00;
-        }
-        render(fd);
-    }
+    // while(1) {
+    //     for(int i = 0; i < sizeof(disp_buffer); i++) {
+    //         if(i % 33 == 0) {
+    //             disp_buffer[i] = 0x40;
+    //             continue;
+    //         }
+    //         disp_buffer[i] = 0xff;
+    //     }
+    //     render(fd);
+    //     for(int i = 0; i < sizeof(disp_buffer); i++) {
+    //         if(i % 33 == 0) {
+    //             disp_buffer[i] = 0x40;
+    //             continue;
+    //         }
+    //         disp_buffer[i] = 0x00;
+    //     }
+    //     render(fd);
+    // }
 
     
 	
@@ -107,17 +107,17 @@ int main(int argc, char **argv)
 }
 
 
-void render(int fd) {
+// void render(int fd) {
 
-    for(uint8_t page = 0; page < 8; page++) {
-        uint8_t pg_col_set[] = {0x00, (0xb0 + page), 0x00, 0x10};
-        write(fd, pg_col_set, sizeof(pg_col_set));
+//     for(uint8_t page = 0; page < 8; page++) {
+//         uint8_t pg_col_set[] = {0x00, (0xb0 + page), 0x00, 0x10};
+//         write(fd, pg_col_set, sizeof(pg_col_set));
         
-        for(int g = 0; g < 4; g++) {
-            write(fd, (disp_buffer + (page * 132 + g * 33)), 33);
-        }
-        write(fd, (disp_buffer + (page + 1) * 128), 4);
-    }
+//         for(int g = 0; g < 4; g++) {
+//             write(fd, (disp_buffer + (page * 132 + g * 33)), 33);
+//         }
+//         write(fd, (disp_buffer + (page + 1) * 128), 4);
+//     }
     
 
-}
+// }

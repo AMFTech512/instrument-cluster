@@ -1,48 +1,81 @@
 #include <iostream>
 #include <unistd.h>
-#include "lib/SH1106Wire.h"
+#include "lib/SSD1306Wire.h"
+#include "lib/Gauge.h"
 
 #define ADDRESS 0x3c
 
-SH1106Wire disp(ADDRESS);
+SSD1306Wire disp(ADDRESS, GEOMETRY_128_32);
+Gauge gauge;
 
 using namespace std;
-
-void goodMorn();
 
 int main() {
 
     disp.init();
-    disp.flipScreenVertically();
+
+    gauge.setBrightness(0);
 
     disp.setTextAlignment(TEXT_ALIGN_CENTER);
     uint8_t *font = OLEDDisplay::loadFont("fonts/Orbitron_Medium_16.olf");
     disp.setFont(font);
-    disp.drawString(64, 20, "LS1 Powered");
+    disp.drawString(64, 5, "LS1 Powered");
     disp.display();
+
+    usleep(1000000);
+
+    uint16_t buff = 1;
+
+    for(int i = 0; i < 16; i++) {
+        gauge.setLeds(buff);
+        buff <<= 1;
+        usleep(100000);
+    }
+
+    for(int i = 0; i <= 16; i++) {
+        gauge.setLeds(buff);
+        buff |= 0x8000 >> i;
+        usleep(100000);
+    }
     
     usleep(5000000);
 
-    while(true) {
+    gauge.setMaxVal(120);
+
+    for(int i = 0; i <= 120; i++) {
+        gauge.setVal(i);
         disp.clear();
-        disp.drawImg(0, 0, "./images/battery.data");
-        disp.drawImg(25, 0, "./images/chk-eng.data");
-        disp.drawImg(0, 30, "./images/hlights.data");
-        disp.drawImg(20, 30, "./images/oil-press.data");
+        disp.drawString(64, 5, to_string(i) + " mph");
         disp.display();
-
-        usleep(500000);
-
-        disp.clear();
-        disp.drawImg(0, 0, "./images/battery.data");
-        // disp.drawImg(25, 0, "./images/chk-eng.data");
-        disp.drawImg(0, 30, "./images/hlights.data");
-        disp.drawImg(20, 30, "./images/oil-press.data");
-        disp.display();
-
-        usleep(500000);
+        usleep(30000);
     }
+
     
+
+
+    // indicator images
+    // while(true) {
+    //     disp.clear();
+    //     disp.drawImg(0, 0, "./images/battery.data");
+    //     disp.drawImg(25, 0, "./images/chk-eng.data");
+    //     disp.drawImg(0, 30, "./images/hlights.data");
+    //     disp.drawImg(20, 30, "./images/oil-press.data");
+    //     disp.display();
+
+    //     usleep(500000);
+
+    //     disp.clear();
+    //     disp.drawImg(0, 0, "./images/battery.data");
+    //     // disp.drawImg(25, 0, "./images/chk-eng.data");
+    //     disp.drawImg(0, 30, "./images/hlights.data");
+    //     disp.drawImg(20, 30, "./images/oil-press.data");
+    //     disp.display();
+
+    //     usleep(500000);
+    // }
+    
+
+    // battery slide animation
 
     // while(true) {
     //     for(int i = 0; i < 128-battery_width; i++) {
@@ -61,10 +94,3 @@ int main() {
     return 0;
 }
 
-
-void goodMorn() {
-    // disp.setFont(Calligraffitti_Regular_16);
-    disp.drawString(20, 10, "Good");
-    disp.drawString(20, 30, "Morning");
-    disp.drawRect(0, 0, 127, 63);
-}
