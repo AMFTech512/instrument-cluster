@@ -167,6 +167,7 @@ void TwoWire::beginTransmission(int address)
 //
 uint8_t TwoWire::endTransmission(uint8_t sendStop)
 {
+  endTransmission();
   return 0;
 }
 
@@ -200,7 +201,7 @@ size_t TwoWire::write(uint8_t data)
   this->txBuffer.resize(this->txBufferLength + 1);
   this->txBuffer.at(this->txBufferLength) = data;
   this->txBufferLength++;
-  return 0;
+  return txBufferLength;
 }
 
 // must be called in:

@@ -14,12 +14,16 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string.h>
+#include "Lato_black_italic.h"
 
 using namespace std;
 
+// have font named 'font' of type uin8_t[] in h file
+
 // you need to initialize both of these variables
-string fileName = "";
-char *fontData;
+string fileName = "Lato_Black_Italic_24.olf";
+int size = sizeof(font);
+char *fontData= (char*) font;
 
 int main() {
 
@@ -30,7 +34,7 @@ int main() {
         return 1;
     }
 
-    file.write(fontData, sizeof(fontData));
+    file.write(fontData, size);
     file.close();
 
     cout << "Finished writing file" << endl;

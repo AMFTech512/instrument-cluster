@@ -19,10 +19,13 @@ int main() {
     disp.setTextAlignment(TEXT_ALIGN_CENTER);
     uint8_t *font = OLEDDisplay::loadFont("fonts/Orbitron_Medium_16.olf");
     disp.setFont(font);
-    disp.drawString(64, 5, "LS1 Powered");
+    disp.drawString(64, 0, "LS1 Powered");
     disp.display();
 
     usleep(1000000);
+
+    font = OLEDDisplay::loadFont("fonts/Lato_Black_Italic_24.olf");
+    disp.setFont(font);
 
     uint16_t buff = 1;
 
@@ -31,6 +34,8 @@ int main() {
         buff <<= 1;
         usleep(100000);
     }
+
+    buff = 0x8000;
 
     for(int i = 0; i <= 16; i++) {
         gauge.setLeds(buff);
@@ -45,7 +50,7 @@ int main() {
     for(int i = 0; i <= 120; i++) {
         gauge.setVal(i);
         disp.clear();
-        disp.drawString(64, 5, to_string(i) + " mph");
+        disp.drawString(64, 0, to_string(i) + " mph");
         disp.display();
         usleep(30000);
     }

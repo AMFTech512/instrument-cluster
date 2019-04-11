@@ -8,19 +8,21 @@ Gauge::Gauge() {
     sendCommand(SYS_OSC_ON);
     sendCommand(ROW_DRV_OUTPUT);
     setBrightness(0xf);
-    // setLeds(0x0000 (uint16_t));
+    setLeds((uint16_t) 0);
     dispOn();
 }
 
-void Gauge::setLeds(uint16_t disp) {
+void Gauge::setLeds(uint16_t mDisp) {
 
-    uint8_t right = disp & 0xff;
-    uint8_t left = disp >> 8;
+    this->disp = mDisp;
+
+    uint8_t right = mDisp & 0xff;
+    uint8_t left = mDisp >> 8;
 
     Wire.beginTransmission(this->i2c_address);
-    Wire.write(0x00);
+    Wire.write((uint8_t) 0x00);
     Wire.write(right);
-    Wire.write(0x00);
+    Wire.write((uint8_t) 0x00);
     Wire.write(left);
     Wire.endTransmission();
 }
@@ -29,8 +31,6 @@ void Gauge::setVal(uint32_t val) {
     this->val = val;
 
     float black = (16.0 * (1.0 - ((float)val/(float)this->maxVal)));
-    printf("leds black: %f\n", black);
-
     uint16_t new_disp = 0xffff << ((uint16_t) (black));
 
     setLeds(new_disp);
