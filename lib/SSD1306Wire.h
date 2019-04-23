@@ -59,6 +59,7 @@ class SSD1306Wire : public OLEDDisplay {
       initI2cIfNeccesary();
       const int x_offset = (128 - this->width()) / 2;
       #ifdef OLEDDISPLAY_DOUBLE_BUFFER
+      
         uint8_t minBoundY = UINT8_MAX;
         uint8_t maxBoundY = 0;
 

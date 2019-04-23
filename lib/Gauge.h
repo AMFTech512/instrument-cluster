@@ -3,6 +3,7 @@
 
 #include "Wire.h"
 #include <inttypes.h>
+#include "SSD1306Wire.h"
 
 #define SYS_OSC_OFF 0x20
 #define SYS_OSC_ON 0x21
@@ -15,10 +16,12 @@
 // OR with 4-bit brightness value
 #define BRGHT_SET 0xe0
 
+#define DISP_ADDRESS 0x3c
+
 class Gauge {
 
     public: 
-        Gauge();
+        Gauge(uint8_t dispAddress = DISP_ADDRESS);
         void setLeds(uint16_t disp);
         void setMaxVal(uint32_t val);
         void setVal(uint32_t val);
@@ -27,14 +30,22 @@ class Gauge {
         void dispOn();
         void dispOff();
 
+        SSD1306Wire *oled_disp;
+
+        uint8_t gauge_id;
+        static void sel_gauge(uint8_t gauge);
+
     private:
-        uint8_t i2c_address = 0x70;
+        uint8_t led_addr = 0x70;
         uint32_t maxVal = 100;
         uint32_t val = 0;
         uint16_t disp = 0;
         uint8_t brightness = 0xf;
 
         void sendCommand(uint8_t command);
+
+        static uint8_t num_gauges;
+        
 };
 
 #endif
