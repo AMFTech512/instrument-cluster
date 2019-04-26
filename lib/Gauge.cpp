@@ -1,12 +1,17 @@
 #include "Gauge.h"
 #include <stdio.h>
-#include "GPIO.h"
+#include "Selector.h"
 
 uint8_t Gauge::num_gauges = 0;
 
 Gauge::Gauge(uint8_t dispAddress) {
 
-    initGPIO();
+    static bool hasInitPins = false;
+
+    if(!hasInitPins) {
+        Selector::addPin(17);
+        hasInitPins = true;
+    }
 
     this->gauge_id = num_gauges;
     Gauge::num_gauges++;
@@ -19,13 +24,13 @@ Gauge::Gauge(uint8_t dispAddress) {
     setLeds((uint16_t) 0);
     dispOn();
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
     this->oled_disp = new SSD1306Wire(dispAddress, GEOMETRY_128_32);
     this->oled_disp->init();
 }
 
 void Gauge::setLeds(uint16_t mDisp) {
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
     this->disp = mDisp;
 
     uint8_t right = mDisp & 0xff;
@@ -41,7 +46,7 @@ void Gauge::setLeds(uint16_t mDisp) {
 
 void Gauge::setVal(uint32_t val) {
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
 
     this->val = val;
 
@@ -57,19 +62,19 @@ void Gauge::setMaxVal(uint32_t val) {
 
 void Gauge::dispOn() {
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
     sendCommand(DISP_ON);
 }
 
 void Gauge::dispOff() {
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
     sendCommand(DISP_OFF);
 }
 
 void Gauge::setBrightness(uint8_t val) {
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
 
     if(val > 0xf) return;
 
@@ -83,17 +88,14 @@ void Gauge::setI2cAddress(uint8_t addr) {
 
 void Gauge::sendCommand(uint8_t command) {
 
-    Gauge::sel_gauge(this->gauge_id);
+    Selector::select(this->gauge_id);
 
     Wire.beginTransmission(this->led_addr);
     Wire.write(command);
     Wire.endTransmission();
 }
 
-void Gauge::sel_gauge(uint8_t gauge) {
-    if(gauge == 0) {
-        write0();
-    } else {
-        write1();
-    }
+SSD1306Wire* Gauge::getOled() {
+    Selector::select(this->gauge_id);
+    return this->oled_disp;
 }

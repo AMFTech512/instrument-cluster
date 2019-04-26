@@ -29,11 +29,9 @@ class Gauge {
         void setBrightness(uint8_t val);
         void dispOn();
         void dispOff();
-
-        SSD1306Wire *oled_disp;
+        SSD1306Wire* getOled();
 
         uint8_t gauge_id;
-        static void sel_gauge(uint8_t gauge);
 
     private:
         uint8_t led_addr = 0x70;
@@ -42,9 +40,12 @@ class Gauge {
         uint16_t disp = 0;
         uint8_t brightness = 0xf;
 
+        SSD1306Wire *oled_disp;
+
         void sendCommand(uint8_t command);
 
         static uint8_t num_gauges;
+        
         
 };
 
