@@ -44,6 +44,18 @@ void Gauge::setLeds(uint16_t mDisp) {
     Wire.endTransmission();
 }
 
+void Gauge::setNeedle(uint32_t val) {
+
+    Selector::select(this->gauge_id);
+
+    this->val = val;
+
+    float black = (16.0 * (1.0 - ( (float) val / (float) this->maxVal )));
+    uint16_t new_disp = 0x1 << ((uint16_t) (black));
+
+    setLeds(new_disp);
+}
+
 void Gauge::setVal(uint32_t val) {
 
     Selector::select(this->gauge_id);

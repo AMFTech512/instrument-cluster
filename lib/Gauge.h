@@ -25,6 +25,7 @@ class Gauge {
         void setLeds(uint16_t disp);
         void setMaxVal(uint32_t val);
         void setVal(uint32_t val);
+        void setNeedle(uint32_t val);
         void setI2cAddress(uint8_t addr);
         void setBrightness(uint8_t val);
         void dispOn();
