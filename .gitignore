@@ -1,0 +1,10 @@
+*.out*
+*.o
+.vscode/ipch/726dd663347ea583/main.ipch
+*.bin*
+.vscode/ipch/e5b6d9318a9f379c/OLEDDisplay.ipch
+.vscode/ipch/844b6f480761e8e9/GPIO.ipch
+.vscode/ipch/3be3f3712bb7e12f/Gauge.ipch
+.vscode/ipch/2cb2d44d52c1d6d0/GPIO.ipch
+.vscode/*
+lib/GPIO.h.gch
