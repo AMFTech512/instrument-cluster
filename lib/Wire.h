@@ -54,14 +54,14 @@ class TwoWire {
 
   public:
     TwoWire();
-    void begin();
-    void begin(uint8_t);
-    void begin(uint8_t, uint8_t);
-    void begin(int);
-    void end();
+    int begin();
+    int begin(uint8_t);
+    int begin(uint8_t, uint8_t);
+    int begin(int);
+    int end();
     void setClock(uint32_t);
-    void beginTransmission(uint8_t);
-    void beginTransmission(int);
+    int beginTransmission(uint8_t);
+    int beginTransmission(int);
     uint8_t endTransmission(void);
     uint8_t endTransmission(uint8_t);
     uint8_t requestFrom(uint8_t, uint8_t);
@@ -82,6 +82,7 @@ class TwoWire {
     // inline size_t write(long n) { return write((uint8_t)n); }
     // inline size_t write(unsigned int n) { return write((uint8_t)n); }
     // inline size_t write(int n) { return write((uint8_t)n); }
+
 };
 
 extern TwoWire Wire;

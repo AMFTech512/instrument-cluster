@@ -16,17 +16,21 @@ Gauge::Gauge(uint8_t dispAddress) {
     this->gauge_id = num_gauges;
     Gauge::num_gauges++;
 
-    Wire.begin(this->led_addr);
-
-    sendCommand(SYS_OSC_ON);
-    sendCommand(ROW_DRV_OUTPUT);
-    setBrightness(0xf);
-    setLeds((uint16_t) 0);
-    dispOn();
+    initCmds();
 
     Selector::select(this->gauge_id);
     this->oled_disp = new SSD1306Wire(dispAddress, GEOMETRY_128_32);
     this->oled_disp->init();
+}
+
+void Gauge::initCmds() {
+    Wire.begin(this->led_addr);
+
+    sendCommand(SYS_OSC_ON);
+    sendCommand(ROW_DRV_OUTPUT);
+    setBrightness(this->brightness);
+    setLeds(this->disp);
+    dispOn();
 }
 
 void Gauge::setLeds(uint16_t mDisp) {
@@ -36,12 +40,21 @@ void Gauge::setLeds(uint16_t mDisp) {
     uint8_t right = mDisp & 0xff;
     uint8_t left = mDisp >> 8;
 
-    Wire.beginTransmission(this->led_addr);
+    int error = 0;
+
+    error += Wire.beginTransmission(this->led_addr);
     Wire.write((uint8_t) 0x00);
     Wire.write(right);
     Wire.write((uint8_t) 0x00);
     Wire.write(left);
-    Wire.endTransmission();
+    error += Wire.endTransmission();
+
+    if(error != 0){
+        printf("[Gauge::setLeds(uint16_t)] There was an error, recalling self");
+        initCmds();
+        setLeds(mDisp);
+    }
+        
 }
 
 void Gauge::setNeedle(uint32_t val) {

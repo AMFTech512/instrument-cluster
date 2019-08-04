@@ -46,6 +46,8 @@ class Gauge {
         void sendCommand(uint8_t command);
 
         static uint8_t num_gauges;
+
+        void initCmds(void);
         
         
 };

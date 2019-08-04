@@ -59,19 +59,20 @@ TwoWire::TwoWire()
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void TwoWire::begin(void)
+int TwoWire::begin(void)
 {
   
   if ((fileDesc = open(fileName, O_RDWR)) < 0) {					// Open port for reading and writing
 		printf("Failed to open i2c port [from TwoWire::begin(void)]\n");
-		exit(1);
+		return -1;
 	}
+  return 0;
   // printf("File descriptor: %d\n", fileDesc);
 }
 
-void TwoWire::begin(uint8_t address)
+int TwoWire::begin(uint8_t address)
 {
-  begin();
+  int retCode = begin();
   this->txAddress = address;
   printf("Inside of TwoWire::begin(uint8_t)\n");
   while (ioctl(fileDesc, I2C_SLAVE, address) < 0); 
@@ -79,16 +80,17 @@ void TwoWire::begin(uint8_t address)
 	// 	printf("Unable to get bus access to talk to slave [from TwoWire::begin(uint8_t)]\n");
 	// 	exit(1);
 	// }
+  return retCode;
 }
 
-void TwoWire::begin(uint8_t sda, uint8_t scl)
+int TwoWire::begin(uint8_t sda, uint8_t scl)
 {
-  begin();
+  return begin();
 }
 
-void TwoWire::begin(int address)
+int TwoWire::begin(int address)
 {
-  begin();
+  int retCode = begin();
   this->txAddress = address;
   printf("Inside of TwoWire::begin(int)\n");
   while (ioctl(fileDesc, I2C_SLAVE, address) < 0); 
@@ -96,10 +98,12 @@ void TwoWire::begin(int address)
 	// 	printf("Unable to get bus access to talk to slave [from TwoWire::begin(uint8_t)]\n");
 	// 	exit(1);
 	// }
+  return retCode;
 }
 
-void TwoWire::end(void)
+int TwoWire::end(void)
 {
+  return 0;
 }
 
 void TwoWire::setClock(uint32_t clock)
@@ -130,26 +134,28 @@ uint8_t TwoWire::requestFrom(int address, int quantity, int sendStop)
   return 0;
 }
 
-void TwoWire::beginTransmission(uint8_t address)
+int TwoWire::beginTransmission(uint8_t address)
 {
   this->txAddress = address;
   this->txBufferLength = 0;
   this->txBuffer = {};
   if (ioctl(fileDesc, I2C_SLAVE, address) < 0) {					// Set the port options and set the address of the device we wish to speak to
 		printf("Unable to get bus access to talk to slave [from TwoWire::beginTransmission(uint8_t)\n");
-		exit(1);
+		return -1;
 	}
+  return 0;
 }
 
-void TwoWire::beginTransmission(int address)
+int TwoWire::beginTransmission(int address)
 {
   this->txAddress = address;
   this->txBufferLength = 0;
   this->txBuffer = {};
   if (ioctl(fileDesc, I2C_SLAVE, address) < 0) {					// Set the port options and set the address of the device we wish to speak to
 		printf("Unable to get bus access to talk to slave [from TwoWire::beginTransmission(int)]\n");
-		exit(1);
+		return -1;
 	}
+  return 0;
 }
 
 //
@@ -186,7 +192,7 @@ uint8_t TwoWire::endTransmission(void)
 
   if ((writeFile(fileDesc, &(this->txBuffer[0]), this->txBufferLength)) != this->txBufferLength) {								// Send register we want to read from	
 		printf("Error writing to i2c slave [from TwoWire::endTransmission(void)]\n");
-		exit(1);
+		return -1;
 	}
   this->txBufferLength = 0;
   this->txBuffer.resize(0);
