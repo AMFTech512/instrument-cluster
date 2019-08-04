@@ -34,6 +34,7 @@
 #include "OLEDDisplay.h"
 #include "Wire.h"
 #include <thread>
+#include <stdio.h>
 
 class SSD1306Wire : public OLEDDisplay {
   private:
@@ -97,18 +98,20 @@ class SSD1306Wire : public OLEDDisplay {
         sendCommand(minBoundY);
         sendCommand(maxBoundY);
 
+        int error = 0;
+
         byte k = 0;
         for (y = minBoundY; y <= maxBoundY; y++) {
           for (x = minBoundX; x <= maxBoundX; x++) {
             if (k == 0) {
-              Wire.beginTransmission(_address);
+              error += Wire.beginTransmission(_address);
               Wire.write(0x40);
             }
 
             Wire.write(buffer[x + y * this->width()]);
             k++;
             if (k == 16)  {
-              Wire.endTransmission();
+              error += Wire.endTransmission();
               k = 0;
             }
           }
@@ -116,7 +119,7 @@ class SSD1306Wire : public OLEDDisplay {
         }
 
         if (k != 0) {
-          Wire.endTransmission();
+          error += Wire.endTransmission();
         }
       #else
 
@@ -135,16 +138,23 @@ class SSD1306Wire : public OLEDDisplay {
         }
 
         for (uint16_t i=0; i < displayBufferSize; i++) {
-          Wire.beginTransmission(this->_address);
+          error += Wire.beginTransmission(this->_address);
           Wire.write(0x40);
           for (uint8_t x = 0; x < 16; x++) {
             Wire.write(buffer[i]);
             i++;
           }
           i--;
-          Wire.endTransmission();
+          error += Wire.endTransmission();
         }
       #endif
+
+      if(error != 0){
+        printf("[SSD1306Wire::display(void)] There was an error; resetting display and recalling self.\n");
+        this->sendInitCommands();
+        this->resetDisplay();
+        this->display();
+      }
     }
 
     void setI2cAutoInit(bool doI2cAutoInit) {

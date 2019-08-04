@@ -50,7 +50,7 @@ void Gauge::setLeds(uint16_t mDisp) {
     error += Wire.endTransmission();
 
     if(error != 0){
-        printf("[Gauge::setLeds(uint16_t)] There was an error, recalling self");
+        printf("[Gauge::setLeds(uint16_t)] There was an error; recalling self.\n");
         initCmds();
         setLeds(mDisp);
     }
