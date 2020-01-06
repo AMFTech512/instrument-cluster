@@ -40,11 +40,11 @@ This document details the technical aspects of the current prototype.
 ## System Architecture
 
 ### Block Diagram
-![Block Diagram](./Block-diagram.svg)
+![Block Diagram](./docs/Block-diagram.svg)
 
 ### Connections
 The Raspberry Pi uses various pins to commicate with other devices. The connections to these pins are shown in the following diagram:
-![Connections](./raspberry-pi-pinout-cluster.png)
+![Connections](./docs/raspberry-pi-pinout-cluster.png)
 The following [System Architecture](#system-architecture) sections reference this diagram.
 
 ### RPi-Gauge Communication
@@ -77,12 +77,12 @@ To control the whole system, the Raspberry Pi Zero was chosen. The Raspberry Pi 
 
 Here is a picture of the Raspberry Pi Zero:
 
-<img src="./IMG_1560.jpg" style="width: 300px">
+<img src="./docs/IMG_1560.jpg" style="width: 300px">
 
 ### Selector Circuit and I2C Bus Module
 This module is responsible for facilitating the communication between the Raspberry Pi and each of the gauges. The module has two internal wires that act as the I2C Bus. The board also contains the selector circuit. Here is a picture of the [Selector Circuit](#selector-circuit) and I2C Bus module:
 
-<img src="./IMG_1559.jpg" style="width: 300px">
+<img src="./docs/IMG_1559.jpg" style="width: 300px">
 
 #### Selector Circuit
 The selector circuit works by taking a 3-bit input (I0-I2) and outputting a high voltage on one of eight pins (O0-O7). These output pins connect directly to the chip-select (CS) pin on each gauge.
@@ -92,12 +92,12 @@ The selector circuit works by taking a 3-bit input (I0-I2) and outputting a high
 ### CAN Bus Controller Module
 This module is responsible for facilitating communication betewen the Raspberry Pi and the vehicle's CAN Bus. This is what allows the Raspberry Pi to determine information such as speed, RPM, and gas level. Here is a picture of the module:
 
-![CAN Controller Module](./MCP2515_CAN_Bus_Breakout_Board.jpg)
+![CAN Controller Module](./docs/MCP2515_CAN_Bus_Breakout_Board.jpg)
 
 ### Gauges
 The gauges are responsible for displaying information to the user. Here is a picture of a gauge:
 
-<img src="./IMG_1565.jpg" style="width: 300px">
+<img src="./docs/IMG_1565.jpg" style="width: 300px">
 
 Each gauge has two major components:
 1. OLED display
@@ -105,14 +105,14 @@ Each gauge has two major components:
 
 The OLED display is controlled by an in-glass SSD1306 chip. The LED array is controlled by the HT16K33 multiplexing chip. Both of these controller chips can communicate with the Raspberry Pi using the I2C protocol. Additionally, each gauge features a chip-select (CS) pin that allows the Raspberry Pi to select the gauge for exclusive communication (preventing it from sending identical information to multiple gauges). These gauges are custom made with the following schematic:
 
-![Gauge Schematic](./Schematic_Digital-Gauge-Small_Sheet-1_20191230120144.png)
+![Gauge Schematic](./docs/Schematic_Digital-Gauge-Small_Sheet-1_20191230120144.png)
 
 ## Software
 
 ### Software Stack Overview
 Since I have only been able to build a prototype so far, the Raspberry Pi simply runs a demo program to display dummy data on the gauges. The current software stack that I have built is represented with the following diagram, with each bit of code relying on the software underneath it:
 
-![Software Stack](./Software-stack.svg)
+![Software Stack](./docs/Software-stack.svg)
 
 **DISCLAIMER:** The following sections contain unfinished code. I realize that some of the code contains bad practices and may be difficult to read. This code will be refactored and cleaned up in the future. 
 
@@ -261,7 +261,7 @@ void batGas() {
 
     gauge1->getOled()->clear();
     gauge1->getOled()->drawString(80, 0, "13.2v");
-    gauge1->getOled()->drawImg(10, 10, "./images/battery.data");
+    gauge1->getOled()->drawImg(10, 10, "./docs/images/battery.data");
     gauge1->getOled()->display();
     gauge1->setLeds(0x0020);
 
@@ -271,7 +271,7 @@ void batGas() {
 
         gauge2->getOled()->clear();
         gauge2->getOled()->drawString(80, 0, to_string(i) + "%");
-        gauge2->getOled()->drawImg(20, 0, "./images/gas.data");
+        gauge2->getOled()->drawImg(20, 0, "./docs/images/gas.data");
         gauge2->getOled()->display();
 
         gauge2->setNeedle(i);
